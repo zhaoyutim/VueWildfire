@@ -1,6 +1,7 @@
 <template>
   <l-map style="height: 92vh;width: 99vw" :zoom="zoom" :center="center">
     <l-tile-layer :url="baseLayer.url" :attribution="baseLayer.attribution"></l-tile-layer>
+    <l-tile-layer :url="wmtsLayer.wmts_link"></l-tile-layer>
     <l-wms-tile-layer
         :key="wmsLayer.name"
         :base-url="wmsLayer.url"
@@ -16,7 +17,11 @@
 </template>
 
 <script>
-import {LMap, LTileLayer, LWMSTileLayer } from 'vue2-leaflet';
+import {LMap, LTileLayer, LWMSTileLayer} from 'vue2-leaflet';
+import axios from 'axios';
+
+
+
 
 export default {
   components: {
@@ -41,8 +46,17 @@ export default {
         layers: 'nexrad-n0r-900913',
         transparent: true,
         attribution: 'Weather data &copy; 2012 <a href="https://mesonet.agron.iastate.edu/docs/nexrad_mosaic/">IEM Nexrad</a>',
-      }
-    };
+      },
+      wmtsLayer:{}
+    }
+  },
+  methods:{
+    get_link() {
+      axios.get('api/wmts').then(res=>this.wmtsLayer=res['data']);
+    }
+  },
+  beforeMount() {
+    this.get_link();
   }
 }
 </script>
